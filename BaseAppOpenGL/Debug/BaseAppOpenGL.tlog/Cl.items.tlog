@@ -1,0 +1,16 @@
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CCamera.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CCamera.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CMaterial.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CMaterial.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CModel_3DS.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CModel_3DS.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CShaderManager.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CShaderManager.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CTerreno.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CTerreno.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CTexto.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CTexto.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CTexture.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CTexture.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\CTimer.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\CTimer.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\GLTexture.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\GLTexture.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Helpers.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\Helpers.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Main.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\Main.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\math3d.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\math3d.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Scene1.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\Scene1.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Scene3.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\Scene3.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\SceneBaseClass.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\SceneBaseClass.obj
+C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\SceneManager.cpp;C:\Users\luizf\Documents\comp_graf\BaseAppOpenGL\BaseAppOpenGL\Debug\SceneManager.obj
