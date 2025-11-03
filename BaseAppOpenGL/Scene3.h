@@ -26,6 +26,7 @@ public:
 	void CreateSkyBox(float x, float y, float z,
 		float width, float height, float length,
 		CTexture* pTextures);
+	void ShowUpFog();
 
 	
 private:
@@ -33,6 +34,7 @@ private:
 	bool	keys[256];		// Array usado para rotinas do teclado
 	bool	active;			// Window Active Flag Set To TRUE By Default
 	bool	fullscreen;		// Exibir janela em modo fullscreem (TRUE) ou em janela (FALSE)
+	bool    habiliteFog;	// Habilita a neblina (FOG)
 
 
 	CCamera* pCamera;	// Gerencia câmera OpenGL
@@ -57,6 +59,8 @@ private:
 
 	float fRenderPosY;
 	float fTimerPosY;
+	float fFogColor[4];
+
 
 	CModel_3DS* pWoodHouse;
 

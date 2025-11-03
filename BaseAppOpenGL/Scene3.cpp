@@ -31,6 +31,7 @@ CScene3::CScene3()
 	// Carrega todas as texturas
 	pTextures = new CTexture();	
 	pTextures->CreateTextureMipMap(0, "../Scene/txTer.jpg");
+	pTextures->CreateTextureAnisotropic(1, "../Scene/water.bmp");
 
 
 	pTexturesSkybox = new CTexture();
@@ -49,6 +50,12 @@ CScene3::CScene3()
 
 	pWoodHouse = new CModel_3DS();
 	pWoodHouse->Load("../Scene/Casa.3ds");
+
+	habiliteFog = false;
+	fFogColor[0] = 0.611f;
+	fFogColor[1] = 0.760f;
+	fFogColor[2] = 1.0f;
+	fFogColor[3] = 1.0f;
 
 }
 
@@ -146,6 +153,7 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 		pTexturesSkybox);					// Gerador de texturas
 
 
+	if (habiliteFog) ShowUpFog();
 
 	// Carregando Terreno
 	pTextures->ApplyTexture(0);
@@ -157,6 +165,62 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glPopMatrix();
 
 
+	// Criando o RIO
+	// Habilita Blending
+	glEnable(GL_BLEND);
+	// Configura função de Blending
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+
+	glPushAttrib(GL_TEXTURE_BIT);
+	// Unidade de Textura 0
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
+	pTextures->ApplyTexture(1);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_REPLACE);
+
+
+	// Unidade de Textura 1
+	glActiveTexture(GL_TEXTURE1);
+	glEnable(GL_TEXTURE_2D);
+	pTextures->ApplyTexture(1);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+
+	glPushMatrix();
+	glTranslatef(0.0f, -20.0f, 0.0f);
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 0.0f + fRenderPosY);
+	glMultiTexCoord2f(GL_TEXTURE1, 0.0f + fRenderPosY, 0.0f);
+	glVertex3f(-400.0f, 0.0f, -1100.0f);
+
+	glMultiTexCoord2f(GL_TEXTURE0, 5.0f, 0.0f + fRenderPosY);
+	glMultiTexCoord2f(GL_TEXTURE1, 5.0f + fRenderPosY, 0.0f);
+	glVertex3f(-400.0f, 0.0f, 200.0f);
+
+	glMultiTexCoord2f(GL_TEXTURE0, 5.0f, 5.0f + fRenderPosY);
+	glMultiTexCoord2f(GL_TEXTURE1, 5.0f + fRenderPosY, 5.0f);
+	glVertex3f(600.0f, 0.0f, 200.0f);
+
+	glMultiTexCoord2f(GL_TEXTURE0, 0.0f, 5.0f + fRenderPosY);
+	glMultiTexCoord2f(GL_TEXTURE1, 0.0f + fRenderPosY, 5.0f);
+	glVertex3f(600.0f, 0.0f, -1100.0f);
+	glEnd();
+	glPopMatrix();
+
+	glActiveTexture(GL_TEXTURE1);
+	glDisable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
+	glPopAttrib();
+	glDisable(GL_BLEND);
+
+
+
+
+
 
 	// Carregando casa de madeira
 	glPushMatrix();
@@ -166,16 +230,17 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glPopMatrix();
 
 
-
-
 	glDisable(GL_TEXTURE_2D);
+
+	// Caso o fog tiver habilitado, desativa ele no fim da geração da cena
+	if (habiliteFog) glDisable(GL_FOG);
 
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//                               DESENHA OS OBJETOS DA CENA (FIM)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	fTimerPosY = pTimer->GetTime() / 1000.0f;
-	fRenderPosY += 0.2f;
+	fRenderPosY += 0.0005f;
 
 	// Impressão de texto na tela...
 	// Muda para modo de projeção ortogonal 2D
@@ -296,7 +361,9 @@ void CScene3::KeyDownPressed(WPARAM	wParam) // Tratamento de teclas pressionadas
 	case VK_SPACE:
 		pTimer->Init();
 		break;
-
+	case 'F':
+		habiliteFog = !habiliteFog;
+		break;
 	case VK_RETURN:
 		break;
 
@@ -439,6 +506,20 @@ void CScene3::CreateSkyBox(float x, float y, float z,
 	glEnd();
 
 	glPopMatrix();
+}
+
+void CScene3::ShowUpFog() {
+
+	// Habilita Neblina
+	glEnable(GL_FOG);
+	// Cor da Neblina
+	glFogfv(GL_FOG_COLOR, fFogColor);
+	// Ponto Inicial da Neblina a partir da câmera
+	glFogf(GL_FOG_START, 1.0f);
+	// Ponto Final da Neblina a partir da câmera
+	glFogf(GL_FOG_END, 500.0f);
+	// Tipo da Neblina
+	glFogi(GL_FOG_MODE, GL_LINEAR);
 }
 
 
