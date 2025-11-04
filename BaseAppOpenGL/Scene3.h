@@ -23,6 +23,7 @@ public:
 
 	void Draw3DSGrid(float width, float length);
 	void DrawAxis();
+	void DrawBarrel(float x, float y, float z);
 	void CreateSkyBox(float x, float y, float z,
 		float width, float height, float length,
 		CTexture* pTextures);

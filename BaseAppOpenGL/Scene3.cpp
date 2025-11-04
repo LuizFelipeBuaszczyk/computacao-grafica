@@ -218,16 +218,19 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glDisable(GL_BLEND);
 
 
-
-
-
-
 	// Carregando casa de madeira
 	glPushMatrix();
 	glTranslatef(0.0f, 0.0f, 0.0);
 	glRotatef(-75.0f, 0.0f, 1.0f, 0.0f);
 	pWoodHouse->Draw();
 	glPopMatrix();
+
+
+	// Criando Barris
+	DrawBarrel(100.0f, -1.0f, 0.0f);
+	DrawBarrel(120.0f, -4.0f, -10.0f);
+	DrawBarrel(95.0f, -2.5f, -15.0f);
+
 
 
 	glDisable(GL_TEXTURE_2D);
@@ -508,8 +511,8 @@ void CScene3::CreateSkyBox(float x, float y, float z,
 	glPopMatrix();
 }
 
-void CScene3::ShowUpFog() {
-
+void CScene3::ShowUpFog() 
+{
 	// Habilita Neblina
 	glEnable(GL_FOG);
 	// Cor da Neblina
@@ -520,6 +523,33 @@ void CScene3::ShowUpFog() {
 	glFogf(GL_FOG_END, 500.0f);
 	// Tipo da Neblina
 	glFogi(GL_FOG_MODE, GL_LINEAR);
+}
+
+void CScene3::DrawBarrel(float x, float y, float z)
+{
+	GLUquadric* quad = gluNewQuadric();
+
+	float size = 5.0f;
+	float radius = 1.5f;
+
+	// Fechamento do barril
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	glRotatef(180, 1.0f, 0.0f, 0.0f);
+	gluDisk(quad, 0.0f, radius, 32, 2);
+	glPopMatrix();
+
+	// Corpo do Barril
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	gluCylinder(quad, radius, radius, size, 32, 32);
+	glPopMatrix();
+
+	// Fechamento do barril
+	glPushMatrix();
+	glTranslatef(x, y, z+size);
+	gluDisk(quad, 0.0f, radius, 32, 1);
+	glPopMatrix();
 }
 
 
