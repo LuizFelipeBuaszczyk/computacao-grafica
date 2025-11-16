@@ -1,4 +1,4 @@
-#include "Scene3.h"
+ï»¿#include "Scene3.h"
 
 CScene3::CScene3()
 {
@@ -15,7 +15,7 @@ CScene3::CScene3()
 	ulLastFPS = 0;
 	szTitle[256] = 0;
 
-	// Cria gerenciador de impressão de texto na tela
+	// Cria gerenciador de impressÃ£o de texto na tela
 	pTexto = new CTexto();
 
 	// Cria camera
@@ -32,11 +32,13 @@ CScene3::CScene3()
 	pTextures = new CTexture();	
 	pTextures->CreateTextureMipMap(0, "../Scene/txTer.jpg");
 	pTextures->CreateTextureAnisotropic(1, "../Scene/water.bmp");
+	pTextures->CreateTextureAnisotropic(2, "../Scene/txOil1.jpg");
+	pTextures->CreateTextureAnisotropic(3, "../Scene/txOil2.jpg");
 
 
 	pTexturesSkybox = new CTexture();
 	pTexturesSkybox->CreateTextureClamp(0, "../Scene/skybox/front.bmp");// Frente
-	pTexturesSkybox->CreateTextureClamp(1, "../Scene/skybox/back.bmp"); // Trás
+	pTexturesSkybox->CreateTextureClamp(1, "../Scene/skybox/back.bmp"); // TrÃ¡s
 	pTexturesSkybox->CreateTextureClamp(2, "../Scene/skybox/down.bmp"); // Baixo
 	pTexturesSkybox->CreateTextureClamp(3, "../Scene/skybox/up.bmp");  
 	pTexturesSkybox->CreateTextureClamp(4, "../Scene/skybox/left.bmp"); // Esquerda
@@ -50,6 +52,15 @@ CScene3::CScene3()
 
 	pWoodHouse = new CModel_3DS();
 	pWoodHouse->Load("../Scene/Casa.3ds");
+
+	// Luz da casa
+	LightAmbient[0] = 0.0f;		LightAmbient[1] = 0.0f;		LightAmbient[2] = 0.0f;	LightAmbient[3] = 1.0f;
+	LightDiffuse[0] = 1.0f;		LightDiffuse[1] = 1.0f;		LightDiffuse[2] = 1.0f;		LightDiffuse[3] = 1.0f;
+	LightSpecular[0] = 1.0f;	LightSpecular[1] = 1.0f;	LightSpecular[2] = 1.0f;	LightSpecular[3] = 1.0f;
+	LightPosition[0] = 0.0f;	LightPosition[1] = 3.7f;	LightPosition[2] = 0.0f;	LightPosition[3] = 1.0f;
+	LightDirection[0] = 0.0f;	LightDirection[1] = -1.0f;	LightDirection[2] = 0.0f;
+	LightPositionSky[0] = 30.0f;	LightPositionSky[1] = 30.0f;	LightPositionSky[2] = 20.0f;	LightPositionSky[3] = 1.0f;
+	LightPositionSky2[0] = -30.0f;	LightPositionSky2[1] = 30.0f;	LightPositionSky2[2] = -20.0f;	LightPositionSky2[3] = 1.0f;
 
 	habiliteFog = false;
 	fFogColor[0] = 0.611f;
@@ -107,7 +118,7 @@ CScene3::~CScene3(void)
 
 
 
-int CScene3::DrawGLScene(void)	// Função que desenha a cena
+int CScene3::DrawGLScene(void)	// FunÃ§Ã£o que desenha a cena
 {
 	// Get FPS
 	if (GetTickCount() - ulLastFPS >= 1000)	// When A Second Has Passed...
@@ -124,7 +135,7 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glLoadIdentity();									// Inicializa a Modelview Matrix Atual
 
 
-	// Seta as posições da câmera
+	// Seta as posiÃ§Ãµes da cÃ¢mera
 	pCamera->setView();
 
 	// Desenha grid 
@@ -133,16 +144,23 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	// Desenha os eixos do sistema cartesiano
 	DrawAxis();
 
-	// Modo FILL ou WIREFRAME (pressione barra de espaço)	
+	// Modo FILL ou WIREFRAME (pressione barra de espaÃ§o)	
 	if (bIsWireframe)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	else
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);	
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	//                               DESENHA OS OBJETOS DA CENA (INÍCIO)
+	//                               DESENHA OS OBJETOS DA CENA (INÃCIO)
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Desenha a Lï¿½mpada
+	glPushMatrix();
+	glTranslatef(LightPosition[0], LightPosition[1], LightPosition[2]);
+	auxSolidSphere(0.3);
+	glPopMatrix();
+
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -168,7 +186,7 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	// Criando o RIO
 	// Habilita Blending
 	glEnable(GL_BLEND);
-	// Configura função de Blending
+	// Configura funÃ§Ã£o de Blending
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
@@ -218,12 +236,54 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glDisable(GL_BLEND);
 
 
+	// Habilita iluminaï¿½ï¿½o global (PHONG)
+	glEnable(GL_LIGHTING);
+
+	// Habilita a fonte de luz (lï¿½mpada 0)
+	glEnable(GL_LIGHT0);
+	// Habilita a fonte de luz (lï¿½mpada 1)
+	glEnable(GL_LIGHT1);
+	// Habilita a fonte de luz (lï¿½mpada 2)
+	glEnable(GL_LIGHT2);
+
+	// Atribuindo os valores para os componentes de definiï¿½ï¿½o da lï¿½mpada
+	glLightfv(GL_LIGHT2, GL_AMBIENT, LightAmbient);
+	glLightfv(GL_LIGHT2, GL_DIFFUSE, LightDiffuse);
+	glLightfv(GL_LIGHT2, GL_SPECULAR, LightSpecular);
+	glLightfv(GL_LIGHT2, GL_POSITION, LightPositionSky2);
+
+	// Atribuindo os valores para os componentes de definiï¿½ï¿½o da lï¿½mpada
+	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+	glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpecular);
+	glLightfv(GL_LIGHT1, GL_POSITION, LightPositionSky);
+
+	// Atribuindo os valores para os componentes de definiï¿½ï¿½o da lï¿½mpada
+	glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);
+	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
+	MatAmbient[0] = 0.24725f;	MatAmbient[1] = 0.1995f;	MatAmbient[2] = 0.0745f;	MatAmbient[3] = 1.0f;
+	MatDiffuse[0] = 0.75164f;	MatDiffuse[1] = 0.60648f;	MatDiffuse[2] = 0.22648f;	MatDiffuse[3] = 1.0f;
+	MatSpecular[0] = 0.628281f;	MatSpecular[1] = 0.555802f;	MatSpecular[2] = 0.366065f;	MatSpecular[3] = 1.0f;
+	MatShininess = 51.2f;
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MatAmbient);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MatDiffuse);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, MatSpecular);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, MatShininess);
+
 	// Carregando casa de madeira
 	glPushMatrix();
 	glTranslatef(0.0f, 0.0f, 0.0);
 	glRotatef(-75.0f, 0.0f, 1.0f, 0.0f);
 	pWoodHouse->Draw();
 	glPopMatrix();
+
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHT1);
+	glDisable(GL_LIGHT2);
+	glDisable(GL_LIGHTING);
+
 
 
 	// Criando Barris
@@ -235,7 +295,7 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 
 	glDisable(GL_TEXTURE_2D);
 
-	// Caso o fog tiver habilitado, desativa ele no fim da geração da cena
+	// Caso o fog tiver habilitado, desativa ele no fim da geraÃ§Ã£o da cena
 	if (habiliteFog) glDisable(GL_FOG);
 
 	
@@ -245,9 +305,9 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	fTimerPosY = pTimer->GetTime() / 1000.0f;
 	fRenderPosY += 0.0005f;
 
-	// Impressão de texto na tela...
-	// Muda para modo de projeção ortogonal 2D
-	// OBS: Desabilite Texturas e Iluminação antes de entrar nesse modo de projeção
+	// ImpressÃ£o de texto na tela...
+	// Muda para modo de projeÃ§Ã£o ortogonal 2D
+	// OBS: Desabilite Texturas e IluminaÃ§Ã£o antes de entrar nesse modo de projeÃ§Ã£o
 	OrthoMode(0, 0, WIDTH, HEIGHT);
 
 
@@ -271,18 +331,18 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glRasterPos2f(10.0f, 40.0f);
 	pTexto->glPrint("Player LookAt  : %f, %f, %f", pCamera->Forward[0], pCamera->Forward[1], pCamera->Forward[2]);
 
-	//// Posição do Player
+	//// PosiÃ§Ã£o do Player
 	glRasterPos2f(10.0f, 60.0f);
 	pTexto->glPrint("Player Position: %f, %f, %f", pCamera->Position[0], pCamera->Position[1], pCamera->Position[2]);
 
-	//// Imprime o FPS da aplicação e o Timer
+	//// Imprime o FPS da aplicaÃ§Ã£o e o Timer
 	glRasterPos2f(10.0f, 80.0f);
 	pTexto->glPrint("Frames-per-Second: %d ---- Timer: %.1f segundos", iFPS, (pTimer->GetTime()/1000));
 
 
 	glPopMatrix();
 
-	// Muda para modo de projeção perspectiva 3D
+	// Muda para modo de projeÃ§Ã£o perspectiva 3D
 	PerspectiveMode();
 
 	return true;
@@ -293,7 +353,7 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 
 void CScene3::MouseMove(void) // Tratamento de movimento do mouse
 {
-	// Realiza os cálculos de rotação da visão do Player (através das coordenadas
+	// Realiza os cÃ¡lculos de rotaÃ§Ã£o da visÃ£o do Player (atravÃ©s das coordenadas
 	// X do mouse.
 	POINT mousePos;
 	int middleX = WIDTH >> 1;
@@ -308,7 +368,7 @@ void CScene3::MouseMove(void) // Tratamento de movimento do mouse
 	fDeltaX = (float)((middleX - mousePos.x)) / 10;
 	fDeltaY = (float)((middleY - mousePos.y)) / 10;
 
-	// Rotaciona apenas a câmera
+	// Rotaciona apenas a cÃ¢mera
 	pCamera->rotateGlob(-fDeltaX, 0.0f, 1.0f, 0.0f);
 	pCamera->rotateLoc(-fDeltaY, 1.0f, 0.0f, 0.0f);
 }
@@ -344,7 +404,7 @@ void CScene3::KeyPressed(void) // Tratamento de teclas pressionadas
 	{
 		pCamera->moveGlob(0.0f, pCamera->Up[1], 0.0f);
 	}
-	// Senão, interrompe movimento do Player
+	// SenÃ£o, interrompe movimento do Player
 	else
 	{
 	}
@@ -431,7 +491,7 @@ void CScene3::CreateSkyBox(float x, float y, float z,
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glPushMatrix();
 
-	// Centraliza o Skybox em torno da posição especificada(x, y, z)
+	// Centraliza o Skybox em torno da posiÃ§Ã£o especificada(x, y, z)
 	x = x - width / 2;
 	y = y - height / 2;
 	z = z - length / 2;
@@ -517,9 +577,9 @@ void CScene3::ShowUpFog()
 	glEnable(GL_FOG);
 	// Cor da Neblina
 	glFogfv(GL_FOG_COLOR, fFogColor);
-	// Ponto Inicial da Neblina a partir da câmera
+	// Ponto Inicial da Neblina a partir da cÃ¢mera
 	glFogf(GL_FOG_START, 1.0f);
-	// Ponto Final da Neblina a partir da câmera
+	// Ponto Final da Neblina a partir da cÃ¢mera
 	glFogf(GL_FOG_END, 500.0f);
 	// Tipo da Neblina
 	glFogi(GL_FOG_MODE, GL_LINEAR);
@@ -532,7 +592,14 @@ void CScene3::DrawBarrel(float x, float y, float z)
 	float size = 5.0f;
 	float radius = 1.5f;
 
+	gluQuadricNormals(quad, GLU_SMOOTH);
+	gluQuadricTexture(quad, GL_TRUE);
+
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
+
 	// Fechamento do barril
+	pTextures->ApplyTexture(3);
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	glRotatef(180, 1.0f, 0.0f, 0.0f);
@@ -540,16 +607,20 @@ void CScene3::DrawBarrel(float x, float y, float z)
 	glPopMatrix();
 
 	// Corpo do Barril
+	pTextures->ApplyTexture(2);
 	glPushMatrix();
 	glTranslatef(x, y, z);
 	gluCylinder(quad, radius, radius, size, 32, 32);
 	glPopMatrix();
 
 	// Fechamento do barril
+	pTextures->ApplyTexture(3);
 	glPushMatrix();
 	glTranslatef(x, y, z+size);
 	gluDisk(quad, 0.0f, radius, 32, 1);
 	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 

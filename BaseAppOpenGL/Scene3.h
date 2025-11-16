@@ -62,6 +62,20 @@ private:
 	float fTimerPosY;
 	float fFogColor[4];
 
+	GLfloat LightAmbient[4];
+	GLfloat LightDiffuse[4];
+	GLfloat LightSpecular[4];
+	GLfloat LightPosition[4];
+	GLfloat LightPositionSky[4];
+	GLfloat LightPositionSky2[4];
+	GLfloat LightDirection[3];
+	GLfloat LightDirectionCam[3];
+	// Definindo as propriedades do material
+	GLfloat MatAmbient[4];
+	GLfloat MatDiffuse[4];
+	GLfloat MatSpecular[4];
+	GLfloat MatShininess;
+
 
 	CModel_3DS* pWoodHouse;
 
