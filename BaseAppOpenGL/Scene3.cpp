@@ -34,6 +34,10 @@ CScene3::CScene3()
 	pTextures->CreateTextureAnisotropic(1, "../Scene/water.bmp");
 	pTextures->CreateTextureAnisotropic(2, "../Scene/txOil1.jpg");
 	pTextures->CreateTextureAnisotropic(3, "../Scene/txOil2.jpg");
+	pTextures->CreateTextureMipMap(4, "../Scene/spheremap.jpg");
+	pTextures->CreateTextureAnisotropic(5, "../Scene/txWood.jpg");
+	pTextures->CreateTextureLinear(6, "../Scene/Rope_D.jpg");
+	pTextures->CreateTextureLinear(7, "../Scene/Rope_N.jpg");
 
 
 	pTexturesSkybox = new CTexture();
@@ -47,7 +51,7 @@ CScene3::CScene3()
 	pTerreno = NULL;
 	pTerreno = new CTerreno();
 	pTerreno->LoadRawFile("../Scene/terreno.raw");
-	pTerreno->CreateHeightMapDisplayList(false, false);
+	pTerreno->CreateHeightMapDisplayList();
 
 
 	pWoodHouse = new CModel_3DS();
@@ -67,6 +71,8 @@ CScene3::CScene3()
 	fFogColor[1] = 0.760f;
 	fFogColor[2] = 1.0f;
 	fFogColor[3] = 1.0f;
+
+	houseLightOn = true;
 
 }
 
@@ -178,7 +184,6 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 
 	glPushMatrix();
 	glTranslatef(-400.0f, -61.0f, -850.0f);
-	//glTranslatef(0.0f, 0.0f, 0.0f);
 	pTerreno->RenderHeightMapDisplayList();
 	glPopMatrix();
 
@@ -236,11 +241,33 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glDisable(GL_BLEND);
 
 
+	// Desenha o Reflexo do céu
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+
+	pTextures->BeginSphereMapping(4);
+	glPushMatrix();
+	glTranslatef(0.0f, -0.3f, 0.0f);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 0.0f); glVertex3f(-400.0f, -19.0f, -1100.0f);
+	glTexCoord2f(5.0f, 0.0f); glVertex3f(-400.0f, -19.0f, 200.0f);
+	glTexCoord2f(5.0f, 5.0f); glVertex3f(600.0f, -19.0f, 200.0f);
+	glTexCoord2f(0.0f, 5.0f); glVertex3f(600.0f, -19.0f, -1100.0f);
+	glEnd();
+	glPopMatrix();
+	pTextures->EndSphereMapping();
+
+	glDisable(GL_BLEND);
+
+
 	// Habilita ilumina��o global (PHONG)
 	glEnable(GL_LIGHTING);
 
-	// Habilita a fonte de luz (l�mpada 0)
-	glEnable(GL_LIGHT0);
+	if (houseLightOn) {
+		// Habilita a fonte de luz (l�mpada 0)
+		glEnable(GL_LIGHT0);
+	}
 	// Habilita a fonte de luz (l�mpada 1)
 	glEnable(GL_LIGHT1);
 	// Habilita a fonte de luz (l�mpada 2)
@@ -258,11 +285,13 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glLightfv(GL_LIGHT1, GL_SPECULAR, LightSpecular);
 	glLightfv(GL_LIGHT1, GL_POSITION, LightPositionSky);
 
-	// Atribuindo os valores para os componentes de defini��o da l�mpada
-	glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);
-	glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
+	if (houseLightOn) {
+		// Atribuindo os valores para os componentes de defini��o da l�mpada
+		glLightfv(GL_LIGHT0, GL_AMBIENT, LightAmbient);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, LightDiffuse);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, LightSpecular);
+		glLightfv(GL_LIGHT0, GL_POSITION, LightPosition);
+	}
 	MatAmbient[0] = 0.24725f;	MatAmbient[1] = 0.1995f;	MatAmbient[2] = 0.0745f;	MatAmbient[3] = 1.0f;
 	MatDiffuse[0] = 0.75164f;	MatDiffuse[1] = 0.60648f;	MatDiffuse[2] = 0.22648f;	MatDiffuse[3] = 1.0f;
 	MatSpecular[0] = 0.628281f;	MatSpecular[1] = 0.555802f;	MatSpecular[2] = 0.366065f;	MatSpecular[3] = 1.0f;
@@ -279,7 +308,10 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	pWoodHouse->Draw();
 	glPopMatrix();
 
-	glDisable(GL_LIGHT0);
+	if (houseLightOn) {
+		glDisable(GL_LIGHT0);
+	}
+	
 	glDisable(GL_LIGHT1);
 	glDisable(GL_LIGHT2);
 	glDisable(GL_LIGHTING);
@@ -288,9 +320,13 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 
 	// Criando Barris
 	DrawBarrel(100.0f, -1.0f, 0.0f);
-	DrawBarrel(120.0f, -4.0f, -10.0f);
+	DrawBarrel(120.0f, -6.0f, -10.0f);
 	DrawBarrel(95.0f, -2.5f, -15.0f);
 
+
+	//Criando Carreteis
+	DrawSpool(-10.0f, 5.0f, -2.5f, 90.f);
+	DrawSpool(-9.0f, 10.0f, -8.0f, 110.f);
 
 
 	glDisable(GL_TEXTURE_2D);
@@ -427,6 +463,8 @@ void CScene3::KeyDownPressed(WPARAM	wParam) // Tratamento de teclas pressionadas
 	case 'F':
 		habiliteFog = !habiliteFog;
 		break;
+	case 'L':
+		houseLightOn = !houseLightOn;
 	case VK_RETURN:
 		break;
 
@@ -623,5 +661,139 @@ void CScene3::DrawBarrel(float x, float y, float z)
 	glDisable(GL_TEXTURE_2D);
 }
 
+void CScene3::DrawSpool(float x, float y, float z, float rotation)
+{
+	GLUquadric* quad = gluNewQuadric();
+
+	float size = 2.5f;
+	float radius = 4.0f;
+	float radiusRope = 2.7f;
+
+	gluQuadricNormals(quad, GLU_SMOOTH);
+	gluQuadricTexture(quad, GL_TRUE);
+
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
+
+	glPushMatrix();
+	glRotatef(rotation, 1.0f, 0.0f, 0.0f);
+
+	// Fechamento do carretel
+	pTextures->ApplyTexture(5);
+	glPushMatrix();
+		glTranslatef(x, y, z);
+		gluDisk(quad, 0.0f, radius, 32, 2);
+
+		glPushMatrix();
+			glRotatef(180, 1.0f, 0.0f, 0.0f);
+			gluDisk(quad, 0.0f, radius, 32, 2);
+		glPopMatrix();
+	glPopMatrix();
+
+	// Cordas
+	glPushAttrib(GL_TEXTURE_BIT);
+
+	// --- TEXTURE0 = Normal Map (DOT3)
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glEnable(GL_TEXTURE_2D);
+	pTextures->ApplyTexture(7); // normal map
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+
+	// --- TEXTURE1 = Diffuse Map
+	glActiveTextureARB(GL_TEXTURE1_ARB);
+	glEnable(GL_TEXTURE_2D);
+	pTextures->ApplyTexture(6);
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	DrawCylinderNormalMapped(radiusRope, size, 32);
+	glPopMatrix();
+
+
+	// Desabilitar multitexture
+	glActiveTextureARB(GL_TEXTURE1_ARB);
+	glDisable(GL_TEXTURE_2D);
+
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glDisable(GL_TEXTURE_2D);
+
+	glPopAttrib();
+	
+
+	// Fechamento do carretel
+	pTextures->ApplyTexture(5);
+	glPushMatrix();
+		glTranslatef(x, y, z + size);
+		gluDisk(quad, 0.0f, radius, 32, 1);
+
+		glPushMatrix();
+			glRotatef(180, 1.0f, 0.0f, 0.0f);
+			gluDisk(quad, 0.0f, radius, 32, 2);
+		glPopMatrix();
+	glPopMatrix();
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void CScene3::DrawCylinderNormalMapped(float radius, float height, int slices)
+{
+	float step = (2.0f * 3.14f) / (float)slices;
+
+	glBegin(GL_QUADS);
+	for (int i = 0; i < slices; i++)
+	{
+		float a0 = i * step;
+		float a1 = (i + 1) * step;
+
+		float x0 = cosf(a0);
+		float y0 = sinf(a0);
+		float x1 = cosf(a1);
+		float y1 = sinf(a1);
+
+		// Normais para o cilindro
+		glNormal3f(x0, y0, 0.0f);
+
+		// --- VÉRTICE 1 ---
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (float)i / slices, 0.0f); // normal map
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, (float)i / slices, 0.0f); // diffuse
+		glVertex3f(radius * x0, radius * y0, 0);
+
+		// Normal próxima fatia
+		glNormal3f(x1, y1, 0.0f);
+
+		// --- VÉRTICE 2 ---
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (float)(i + 1) / slices, 0.0f);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, (float)(i + 1) / slices, 0.0f);
+		glVertex3f(radius * x1, radius * y1, 0);
+
+		// --- VÉRTICE 3 ---
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (float)(i + 1) / slices, 1.0f);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, (float)(i + 1) / slices, 1.0f);
+		glVertex3f(radius * x1, radius * y1, height);
+
+		// Normal volta para x0,y0
+		glNormal3f(x0, y0, 0.0f);
+
+		// --- VÉRTICE 4 ---
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, (float)i / slices, 1.0f);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, (float)i / slices, 1.0f);
+		glVertex3f(radius * x0, radius * y0, height);
+	}
+	glEnd();
+}
 
 

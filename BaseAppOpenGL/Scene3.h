@@ -24,6 +24,8 @@ public:
 	void Draw3DSGrid(float width, float length);
 	void DrawAxis();
 	void DrawBarrel(float x, float y, float z);
+	void DrawSpool(float x, float y, float z, float rotation);
+	void DrawCylinderNormalMapped(float radius, float height, int slices);
 	void CreateSkyBox(float x, float y, float z,
 		float width, float height, float length,
 		CTexture* pTextures);
@@ -36,6 +38,7 @@ private:
 	bool	active;			// Window Active Flag Set To TRUE By Default
 	bool	fullscreen;		// Exibir janela em modo fullscreem (TRUE) ou em janela (FALSE)
 	bool    habiliteFog;	// Habilita a neblina (FOG)
+	bool	houseLightOn;
 
 
 	CCamera* pCamera;	// Gerencia câmera OpenGL
