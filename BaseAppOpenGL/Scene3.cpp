@@ -57,6 +57,9 @@ CScene3::CScene3()
 	pWoodHouse = new CModel_3DS();
 	pWoodHouse->Load("../Scene/Casa.3ds");
 
+	pTree = new CModel_3DS();
+	pTree->Load("../Scene/Tree1/tree1.3ds");
+
 	// Luz da casa
 	LightAmbient[0] = 0.0f;		LightAmbient[1] = 0.0f;		LightAmbient[2] = 0.0f;	LightAmbient[3] = 1.0f;
 	LightDiffuse[0] = 1.0f;		LightDiffuse[1] = 1.0f;		LightDiffuse[2] = 1.0f;		LightDiffuse[3] = 1.0f;
@@ -117,6 +120,11 @@ CScene3::~CScene3(void)
 	{
 		delete pTexturesSkybox;
 		pTexturesSkybox = NULL;
+	}
+	if (pTree)
+	{
+		delete pTree;
+		pTree = NULL;
 	}
 
 }
@@ -317,6 +325,11 @@ int CScene3::DrawGLScene(void)	// Função que desenha a cena
 	glDisable(GL_LIGHTING);
 
 
+	// Criando Árvores
+	DrawTree(450.0f, 90.0f, -300.0f, pTree);
+	DrawTree(500.0f, 140.0f, -400.0f, pTree);
+	DrawTree(465.0f, 80.0f, -200.0f, pTree);
+	DrawTree(600.0f, 145.0f, -360.0f, pTree);
 
 	// Criando Barris
 	DrawBarrel(100.0f, -1.0f, 0.0f);
@@ -794,6 +807,20 @@ void CScene3::DrawCylinderNormalMapped(float radius, float height, int slices)
 		glVertex3f(radius * x0, radius * y0, height);
 	}
 	glEnd();
+}
+
+void CScene3::DrawTree(float x, float y, float z, CModel_3DS* pTree)
+{
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+
+	glPushMatrix();
+	glTranslatef(x, y, z);
+	glScalef(0.5f, 0.5f, 0.5f);
+	pTree->Draw();
+	glPopMatrix();
+
+	glDisable(GL_ALPHA_TEST);
 }
 
 

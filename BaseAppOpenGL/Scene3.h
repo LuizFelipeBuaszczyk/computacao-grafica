@@ -26,6 +26,7 @@ public:
 	void DrawBarrel(float x, float y, float z);
 	void DrawSpool(float x, float y, float z, float rotation);
 	void DrawCylinderNormalMapped(float radius, float height, int slices);
+	void DrawTree(float x, float y, float z, CModel_3DS* pTree);
 	void CreateSkyBox(float x, float y, float z,
 		float width, float height, float length,
 		CTexture* pTextures);
@@ -81,6 +82,7 @@ private:
 
 
 	CModel_3DS* pWoodHouse;
+	CModel_3DS* pTree;
 
 };
 

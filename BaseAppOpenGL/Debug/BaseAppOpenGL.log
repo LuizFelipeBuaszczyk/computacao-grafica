@@ -1,23 +1,2 @@
-﻿  CCamera.cpp
-C:\Users\luizf\Documents\comp_graf\trab_final\BaseAppOpenGL\BaseAppOpenGL\CCamera.cpp(237,12): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  CMaterial.cpp
-  CModel_3DS.cpp
-  CShaderManager.cpp
-  CTerreno.cpp
-  CTexto.cpp
-  CTexture.cpp
-  CTimer.cpp
-  GLTexture.cpp
-  Helpers.cpp
-C:\Users\luizf\Documents\comp_graf\trab_final\BaseAppOpenGL\BaseAppOpenGL\Helpers.h(1,13): warning C4081: expected 'newline'; found ';'
-  (compiling source file 'Helpers.cpp')
-  
-  Main.cpp
-C:\Users\luizf\Documents\comp_graf\trab_final\BaseAppOpenGL\BaseAppOpenGL\Main.cpp(182,3): warning C4838: conversion from 'int' to 'BYTE' requires a narrowing conversion
-  math3d.cpp
-  Scene1.cpp
-  Scene3.cpp
-  SceneBaseClass.cpp
-  SceneManager.cpp
-  Generating Code...
+﻿  Scene3.cpp
   BaseAppOpenGL.vcxproj -> C:\Users\luizf\Documents\comp_graf\trab_final\BaseAppOpenGL\Debug\BaseAppOpenGL.exe
